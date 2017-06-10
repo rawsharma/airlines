@@ -5,8 +5,10 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import javax.transaction.UserTransaction;
 
 import cs545.airline.model.Airline;
 import edu.mum.gf.workaround.JpaUtil;
@@ -14,7 +16,6 @@ import edu.mum.gf.workaround.JpaUtil;
 @Named
 @ApplicationScoped
 public class AirlineDao {
-
 //	@PersistenceContext(unitName = "cs545")
 //	private static EntityManager entityManager;
 //  Couldn't figure out another way to inject the persistence context
@@ -22,15 +23,28 @@ public class AirlineDao {
 
 
 	public void create(Airline airline) {
+		EntityTransaction transaction = entityManager.getTransaction();
+		transaction.begin();
 		entityManager.persist(airline);
+		transaction.commit();
+
+
 	}
 
 	public Airline update(Airline airline) {
-		return entityManager.merge(airline);
+		EntityTransaction transaction = entityManager.getTransaction();
+		transaction.begin();
+		airline=entityManager.merge(airline);
+		transaction.commit();
+		return airline;
 	}
 
 	public void delete(Airline airline) {
+		EntityTransaction transaction = entityManager.getTransaction();
+		transaction.begin();
 		entityManager.remove(airline);
+		transaction.commit();
+
 	}
 
 	public Airline findOne(long id) {
