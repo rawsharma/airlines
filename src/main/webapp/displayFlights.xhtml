@@ -4,8 +4,76 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
-<f:view>
-    <h:outputLabel value="Hello, world"/>
-</f:view>
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<h:head>
+
+</h:head>
+<h:body>
+    <ui:composition template="include/template.xhtml">
+        <ui:define name="title">
+            Airline | Flights
+        </ui:define>
+        <ui:define name="top">
+            Flights Details
+        </ui:define>
+
+        <ui:define name="content">
+            <br/>
+            <h:commandLink  outcome="index">Go Back To Home</h:commandLink>
+            <h:form style="float: right">
+                <f:ajax render=":forRender">
+                    <h:outputLabel for="fil">Filter By</h:outputLabel>
+                    <h:selectOneMenu binding="#{findBy}" id="fil">
+                        <f:selectItem itemValue="" itemLabel="--Select One--"/>
+                        <f:selectItem itemValue="airline" itemLabel="Airline"/>
+                        <f:selectItem itemValue="destination" itemLabel="Destination"/>
+                        <f:selectItem itemValue="departure" itemLabel="Departure date"/>
+                        <f:selectItem itemValue="arrival" itemLabel="Arrival date"/>
+                        <f:valueChangeListener for="fil"/>
+                    </h:selectOneMenu>
+                    <h:inputText id="inp" binding="#{findByText}" p:placeholder="searchText"/>
+                    <h:commandButton value="Go" action="#{viewController.updateFlights(findBy.value,findByText.value)}"/>
+                </f:ajax>
+            </h:form>
+            <br/><br/>
+            <h:panelGrid id="forRender">
+                <h:dataTable value="#{viewController.flights}" var="flight" id="dataTable"
+                             styleClass="table"
+                             headerClass="table-header"
+                             rowClasses="table-odd-row,table-even-row">
+                    <f:facet name="header">Flight Details</f:facet>
+                    <h:column>
+                        <f:facet name="header">Flight Number</f:facet>
+                        #{flight.flightnr}
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Airline</f:facet>
+                        #{flight.airline.name}
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Airplane (No. /model /capacity)</f:facet>
+                        #{flight.airplane.serialnr} / #{flight.airplane.model} / #{flight.airplane.capacity}
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Origin</f:facet>
+                        #{flight.origin.name} (#{flight.origin.airportcode}), #{flight.origin.city}, #{flight.origin.country}
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Departure</f:facet>
+                        #{flight.departureDate} #{flight.departureTime}
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Destination</f:facet>
+                        #{flight.destination.name} (#{flight.destination.airportcode}), #{flight.destination.city}, #{flight.destination.country}
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Arrival</f:facet>
+                        #{flight.arrivalDate} #{flight.arrivalTime}
+                    </h:column>
+                </h:dataTable>
+            </h:panelGrid>
+        </ui:define>
+    </ui:composition>
+</h:body>
 </html>

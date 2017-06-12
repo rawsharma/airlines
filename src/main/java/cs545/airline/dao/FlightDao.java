@@ -94,7 +94,7 @@ public class FlightDao {
     @SuppressWarnings("unchecked")
     public List<Flight> findByDeparture(Date date, Date time) {
         Query query = entityManager.createQuery(
-                "select distinct f from Flight f where f.departureDate=:departureDate and f.departureTime=:departureTime",
+                "select distinct f from Flight f where f.departureDate=:departureDate or f.departureTime=:departureTime",
                 Flight.class);
         query.setParameter("departureDate", date, TemporalType.DATE);
         query.setParameter("departureTime", time, TemporalType.TIME);
@@ -117,7 +117,7 @@ public class FlightDao {
     @SuppressWarnings("unchecked")
     public List<Flight> findByArrival(Date date, Date time) {
         Query query = entityManager.createQuery(
-                "select distinct f from Flight f where f.arrivalDate=:arrivalDate and f.arrivalTime=:arrivalTime",
+                "select distinct f from Flight f where f.arrivalDate=:arrivalDate or f.arrivalTime=:arrivalTime",
                 Flight.class);
         query.setParameter("arrivalDate", date, TemporalType.DATE);
         query.setParameter("arrivalTime", time, TemporalType.TIME);

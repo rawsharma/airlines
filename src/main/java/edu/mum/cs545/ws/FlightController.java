@@ -1,77 +1,87 @@
 package edu.mum.cs545.ws;
 
-/**
- * Created by Raw on 6/9/2017.
- */
+import cs545.airline.model.Flight;
+import cs545.airline.service.FlightService;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import cs545.airline.model.Flight;
-import cs545.airline.model.Flight;
-import cs545.airline.model.Flight;
-import cs545.airline.service.FlightService;
-import cs545.airline.service.FlightService;
-import javafx.beans.property.SimpleObjectProperty;
-
 import java.util.List;
 
+/**
+ * Created by ashok on 6/8/17.
+ */
 @Named
 @Path("flight")
 public class FlightController {
     @Inject
     private FlightService flightService;
 
+    @Path("")
     @GET
-    public List<Flight> getAllFlights(){
-        List<Flight> listOfFlights = flightService.findAll();
-        return listOfFlights;
+    public List<Flight> getAllFlights() {
+        try {
+            return flightService.findAll();
+        }catch (Exception ex){
+            return null;
+        }
     }
 
-    @POST
+    @Path("{id}")
+    @GET
+    public Flight getFlight(@PathParam("id") long id) {
+        try {
+            return flightService.findById(id);
+        }catch (Exception ex){
+            return null;
+        }
+    }
+
+    @Path("get")
+    @GET
+    public List<Flight> getFlights(@QueryParam("flightNo") String flightNo) {
+        try {
+            return flightService.findByNumber(flightNo);
+        }catch (Exception ex){
+            return null;
+        }
+    }
+
+    @Path("new")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createFlight(Flight flight) {
+    @POST
+    public Flight saveFlight(Flight flight){
         try {
             flightService.create(flight);
-            return Response.ok().entity(flight).build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.status(500).build();
+            return flightService.find(flight);
+        }catch (Exception exp){
+            return null;
         }
     }
 
-    @PUT
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("{id}")
-    public Response updateFlight(Flight flight, @PathParam("id") int id) {
-        try {
-            flight.setId(id);
-            flightService.update(flight);
-            return Response.ok().entity(flight).build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.status(500).build();
-        }
-    }
-
+    @Path("delete/{id}")
     @DELETE
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("{id}")
-    public Response deleteFlight(@PathParam("id")int id){
+    public Flight deleteFlight(@PathParam("id") long id){
         try{
-            Flight flight =new Flight();
-            flight.setId(id);
-            flight = flightService.find(flight);
+            Flight flight = flightService.findById(id);
             flightService.delete(flight);
-            return Response.ok().entity(flight).build();
-        }catch (Exception e){
-            e.printStackTrace();
-            return Response.status(500).build();
+            return flight;
+        }catch (Exception ex){
+            return null;
+        }
+    }
+
+    @Path("update")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @PUT
+    public Flight updateFlight(Flight flight){
+        try{
+            return flightService.update(flight);
+        }catch (Exception ex){
+            return null;
         }
     }
 }
